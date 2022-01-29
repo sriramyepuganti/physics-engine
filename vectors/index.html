@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vectors</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            display: grid;
+            justify-content: center;
+        }
+
+        img {
+            width: 70%;
+            height: 200px;
+            justify-self: center;
+        }
+
+        canvas {
+            border: 1px solid;
+            justify-self: center;
+        }
+    </style>
+    <script src="./vectors.js"></script>
+</head>
+
+<body>
+    <img src="./vector_def.png" alt="">
+    <img src="./vector_loc_def.png" alt="">
+    <script src="./vectors.js"></script>
+    <h1>vector addition</h1>
+    <img src="./vector_add.png" alt="">
+    <canvas id="vectorAdd" width="300" height="300"></canvas>
+    <script>
+        (() => {
+            const canvas = document.getElementById('vectorAdd');
+            const {
+                width,
+                height
+            } = canvas;
+            const context = vectorAdd.getContext('2d');
+            let location = new Vector(0, 0);
+            const velocity = new Vector(1, 1);
+            const startAnimation = () => {
+                context.clearRect(0, 0, width, height);
+                context.beginPath();
+                context.arc(location.x, location.y, 5, 0, 2 * Math.PI);
+                context.closePath();
+                context.fill();
+                location = location.add(velocity);
+                requestAnimationFrame(startAnimation);
+            }
+            startAnimation();
+        })();
+    </script>
+    <h1>vector subtraction, mul, div, unit vector(vector normalization)</h1>
+    <canvas id="vectorSub" width="300" height="300" onmousemove="startSubAnimation(event)"></canvas>
+    <script>
+        function startSubAnimation({
+            offsetX,
+            offsetY
+        }) {
+            const canvas = document.getElementById('vectorSub');
+            const context = canvas.getContext('2d');
+            let {
+                width,
+                height
+            } = canvas;
+            context.save();
+            let mouseMove = new Vector(offsetX, offsetY);
+            context.clearRect(0, 0, width, height);
+            context.translate(width / 2, height / 2);
+            let resultVector = mouseMove.sub({
+                x: width / 2,
+                y: height / 2
+            });
+
+            /** 
+             * vector multiplication 
+             *  comment it if you do not need
+             */
+
+            // resultVector = resultVector.mul(2);
+
+            /** 
+             * vector division 
+             *  comment it if you do not need
+             */
+            // resultVector = resultVector.div(2);
+
+            /**
+             * normalize vector
+             * comment it if you do not need
+             */
+
+            // resultVector = resultVector.noramlize().mul(50);
+
+
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(resultVector.x, resultVector.y);
+            context.stroke();
+            context.restore();
+        }
+    </script>
+    <h1>acceleration towards mouse</h1>
+    <canvas width="500" height="500" id="accelerateOnMouseMove" onmousemove="accelerateOnMouseMove(event)"></canvas>
+    <script>
+        let vectorForAccelerateOnMouseMove = new Vector(150, 150);
+        let velocity = new Vector(0,0);
+        let acceleration = new Vector(0,0);
+        (() => {
+            const canvas = document.getElementById('accelerateOnMouseMove');
+            const context = canvas.getContext('2d');
+            let {
+                width,
+                height
+            } = canvas;
+            context.strokeStyle = "gray";
+            let location = new Vector(width / 2, height / 2);
+            const startAnimation = () => {
+                context.clearRect(0, 0, width, height);
+                let dir = vectorForAccelerateOnMouseMove.sub(location);
+                dir = dir.noramlize().mul(1);
+                acceleration = dir;
+                velocity.add(acceleration);
+                velocity = velocity.add(acceleration);
+                velocity.limit(1000);
+                location = location.add(velocity);
+                context.beginPath();
+                context.arc(location.x, location.y, 30, 0, 2 * Math.PI);
+                context.closePath();
+                context.fill();
+                context.stroke();
+                requestAnimationFrame(startAnimation);
+            }
+            startAnimation();
+        })();
+
+        function accelerateOnMouseMove({
+            offsetX,
+            offsetY
+        }) {
+            vectorForAccelerateOnMouseMove = new Vector(offsetX, offsetY)
+        }
+    </script>
+</body>
+
+</html>
