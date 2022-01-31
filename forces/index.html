@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>force</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            display: grid;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid;
+            justify-self: center;
+        }
+    </style>
+    <script src="../vectors/vectors.js"></script>
+</head>
+
+<body>
+    <h1>Gravity, Damping, Traction</h1>
+    <canvas width="500" height="500" id="DGT"></canvas>
+    <script>
+        (() => {
+            const canvas = document.getElementById('DGT');
+            const {
+                width,
+                height
+            } = canvas;
+            const context = canvas.getContext('2d');
+            const ballRadius = 5;
+            let location = new Vector(Math.random() * width, Math.random() * height);
+            const velocity = new Vector(1, 1);
+            let gravity = 0.1;
+            let damping = 0.9;
+            let tracition = 1;
+            const maxTraction = 10;
+            const startAnimation = () => {
+                draw();
+                update();
+                requestAnimationFrame(startAnimation);
+            }
+
+            const draw = () => {
+                context.clearRect(0, 0, width, height);
+                context.beginPath();
+                context.arc(location.x, location.y, ballRadius, 0, 2 * Math.PI);
+                context.closePath();
+                context.fill();
+            }
+
+            const update = () => {
+                if (location.y > height - ballRadius || location.y < ballRadius) {
+                    location.y = height - ballRadius;
+                    gravity = -(gravity * damping);
+                    tracition++;
+                    if (tracition > maxTraction) {
+                        velocity.x = 0;
+                    }
+                }
+                if (location.x > width - ballRadius || location.x < ballRadius) {
+                    velocity.x = (velocity.x * -1);
+
+                }
+                gravity += 1;
+                location.add({
+                    x: velocity.x,
+                    y: velocity.y + gravity
+                });
+            }
+
+            startAnimation();
+        })();
+    </script>
+    <h1>Air and Fluid Resistance</h1>
+    <canvas width="500" height="500" id="AFR"></canvas>
+    <script>
+        (() => {
+            const canvas = document.getElementById('AFR');
+            const {
+                width,
+                height
+            } = canvas;
+            const context = canvas.getContext('2d');
+            const ballRadius = 10;
+            const Cd = 0.3;
+            let location = new Vector(Math.random() * width, 100);
+            const velocity = new Vector(1, 1);
+            let gravity = 1;
+            let damping = 0.9;
+            let tracition = 1;
+            const maxTraction = 10;
+            const startAnimation = () => {
+                draw();
+                update();
+                requestAnimationFrame(startAnimation);
+            }
+
+            const draw = () => {
+                context.clearRect(0, 0, width, height);
+                context.fillStyle = 'rgba(0,0,0,0.5)';
+                context.fillRect(0, height / 2, width, height);
+                context.fillStyle = "red";
+                context.beginPath();
+                context.arc(location.x, location.y, ballRadius, 0, 2 * Math.PI);
+                context.closePath();
+                context.fill();
+            }
+
+            const update = () => {
+                const IsTouched = (location.y - ballRadius) >= height / 2;
+                let drag = velocity.copy();
+                if (IsTouched) {
+                    let speed = velocity.magnitude();
+                    let dragMagnitude = Cd * speed * speed;
+                    drag.mul(-1)
+                    drag.noramlize()
+                    drag.mul(dragMagnitude);
+                    gravity = drag.y;
+                }
+
+                location.add({
+                    x: 0,
+                    y: velocity.y + gravity
+                });
+            }
+
+
+            startAnimation();
+        })();
+    </script>
+</body>
+
+</html>
