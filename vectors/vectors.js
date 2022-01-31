@@ -4,20 +4,29 @@ window.Vector = (() => {
             this.x = x;
             this.y = y;
         }
+
+        copy() {
+            return Object.create(this);
+        }
+        
         add(velocityVector) {
-            return new Vector(this.x + velocityVector.x, this.y + velocityVector.y);
+            this.x += velocityVector.x;
+            this.y += velocityVector.y;
         }
 
         sub(velocityVector) {
-            return new Vector(this.x - velocityVector.x, this.y - velocityVector.y);
+            this.x -= velocityVector.x;
+            this.y -= velocityVector.y;
         }
 
         mul(num) {
-            return new Vector(this.x * num, this.y * num);
+            this.x *= num;
+            this.y *= num;
         }
 
         div(num) {
-            return new Vector(this.x / num, this.y / num);
+            this.x /= num;
+            this.y /= num;
         }
 
         magnitude() {
@@ -27,7 +36,7 @@ window.Vector = (() => {
         noramlize() {
             const magnitude = this.magnitude();
             if (magnitude != 0) {
-                return this.div(magnitude);
+                this.div(magnitude);
             }
         }
 

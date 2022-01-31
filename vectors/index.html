@@ -46,7 +46,7 @@
                 width,
                 height
             } = canvas;
-            const context = vectorAdd.getContext('2d');
+            const context = canvas.getContext('2d');
             let location = new Vector(0, 0);
             const velocity = new Vector(1, 1);
             const startAnimation = () => {
@@ -55,7 +55,7 @@
                 context.arc(location.x, location.y, 5, 0, 2 * Math.PI);
                 context.closePath();
                 context.fill();
-                location = location.add(velocity);
+                location.add(velocity);
                 requestAnimationFrame(startAnimation);
             }
             startAnimation();
@@ -78,7 +78,7 @@
             let mouseMove = new Vector(offsetX, offsetY);
             context.clearRect(0, 0, width, height);
             context.translate(width / 2, height / 2);
-            let resultVector = mouseMove.sub({
+            mouseMove.sub({
                 x: width / 2,
                 y: height / 2
             });
@@ -88,25 +88,26 @@
              *  comment it if you do not need
              */
 
-            // resultVector = resultVector.mul(2);
+            //  mouseMove.mul(2);
 
             /** 
              * vector division 
              *  comment it if you do not need
              */
-            // resultVector = resultVector.div(2);
+            // mouseMove.div(2);
 
             /**
              * normalize vector
              * comment it if you do not need
              */
 
-            // resultVector = resultVector.noramlize().mul(50);
+            //  mouseMove.noramlize()
+            //  mouseMove.mul(50);
 
 
             context.beginPath();
             context.moveTo(0, 0);
-            context.lineTo(resultVector.x, resultVector.y);
+            context.lineTo(mouseMove.x, mouseMove.y);
             context.stroke();
             context.restore();
         }
@@ -114,9 +115,9 @@
     <h1>acceleration towards mouse</h1>
     <canvas width="500" height="500" id="accelerateOnMouseMove" onmousemove="accelerateOnMouseMove(event)"></canvas>
     <script>
-        let vectorForAccelerateOnMouseMove = new Vector(150, 150);
-        let velocity = new Vector(0,0);
-        let acceleration = new Vector(0,0);
+        let vectorForAccelerateOnMouseMove = new Vector(250, 250);
+        let velocity = new Vector(0, 0);
+        let acceleration = new Vector(0, 0);
         (() => {
             const canvas = document.getElementById('accelerateOnMouseMove');
             const context = canvas.getContext('2d');
@@ -128,13 +129,14 @@
             let location = new Vector(width / 2, height / 2);
             const startAnimation = () => {
                 context.clearRect(0, 0, width, height);
-                let dir = vectorForAccelerateOnMouseMove.sub(location);
-                dir = dir.noramlize().mul(1);
-                acceleration = dir;
+                let mouseMovement = vectorForAccelerateOnMouseMove.copy();
+                mouseMovement.sub(location);
+                mouseMovement.noramlize();
+                mouseMovement.mul(1);
+                acceleration = mouseMovement;
                 velocity.add(acceleration);
-                velocity = velocity.add(acceleration);
-                velocity.limit(1000);
-                location = location.add(velocity);
+                velocity.limit(100);
+                location.add(velocity);
                 context.beginPath();
                 context.arc(location.x, location.y, 30, 0, 2 * Math.PI);
                 context.closePath();
